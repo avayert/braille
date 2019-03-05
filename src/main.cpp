@@ -13,9 +13,9 @@
 
 // Hoooooo boy https://en.wikipedia.org/wiki/Braille_Patterns#Block
 constexpr unsigned char offsets[4][2] = {
-    {1,    8},
-    {2,   16},
-    {4,   32},
+    {1,  8},
+    {2,  16},
+    {4,  32},
     {64, 128}
 };
 constexpr int unicode_start = 0x2800;
@@ -47,15 +47,16 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-
     int width = image.cols;
     int height = image.rows;
 
-    // if max-length is specified and is smaller than the image then we need to resize it accordingly
-    if (width * height > max_length) {
+    if ((width + 1) * height / 8 > max_length) {
         double ratio = width / static_cast<double>(height);
-        height = static_cast<int>(std::sqrt(max_length / ratio));
-        width = static_cast<int>(height * ratio);
+        width = static_cast<int>(std::sqrt(8 * max_length * ratio + 1) - 1);
+        height = static_cast<int>(width / ratio);
+
+        width -= width % 2;
+        height -= height % 4;
 
         int one = 1;
         height = std::max(one, height);
